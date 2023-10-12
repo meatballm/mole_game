@@ -1,27 +1,58 @@
+import org.w3c.dom.css.Rect;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.*;
+import java.util.Iterator;
+import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import static java.lang.Math.random;
-
+class Mole{
+    Image molek;
+    int x,y;
+    boolean life=true;
+    public Mole(int x,int y,Image k){
+        this.x=x;
+        this.y=y;
+        this.molek=k;
+    }
+    public void Printmole(Graphics g){
+        if(life)
+            g.drawImage(molek,x,y,null);
+    }
+    public void Killmole(){
+        life=false;
+    }
+    public void Catchmole(int mx, int my){
+        Rectangle ham = new Rectangle(mx, my, 135, 135);
+        Rectangle mol = new Rectangle(x, y, 50,50);
+        if(mol.intersects(ham))
+            Killmole();
+    }
+}
 public class Main extends JFrame implements KeyListener {
+    Stack<Mole> mole = new Stack<>();
+    Iterator<Mole> itr = mole.iterator();
     int x=100, y=100;
     int count=0;
+    static int score=0;
     public final int Width =1024;
     public final int Height =666;
     Image hammer = new ImageIcon(Main.class.getResource("./image/hammer.png")).getImage();
-    Image digda= new ImageIcon(Main.class.getResource("./image/digda.png")).getImage();
-    Image digtrio= new ImageIcon(Main.class.getResource("./image/digtrio.png")).getImage();
-    Image background= new ImageIcon(Main.class.getResource("./image/grass.jpg")).getImage();
+    Image dig =new ImageIcon(Main.class.getResource("./image/digda.png")).getImage();
+    Image background;//= new ImageIcon(Main.class.getResource(".image/grass.jpg")).getImage();
+
     public Main(){
         Timer timer=new Timer();
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
                 count++;
+                if(count%3==0){
+                    mole.add(new Mole((int)(Math.random()*900)+50,(int)(Math.random()*450)+100,dig));
+                }
                 repaint();
             }
         };
@@ -34,9 +65,6 @@ public class Main extends JFrame implements KeyListener {
         setBounds(0,0,1024,666);
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-    }
-    public void mole(int x, int y, Graphics g){
-        g.drawImage(digda,x,y,null);
     }
     @Override
     public void keyPressed(KeyEvent e){
@@ -66,6 +94,14 @@ public class Main extends JFrame implements KeyListener {
                         @Override
                         public void run() {
                             hammer = new ImageIcon(Main.class.getResource("./image/hammer.png")).getImage();
+                            for(Mole i:mole){
+                                Rectangle ham = new Rectangle(x, y, 135, 135);
+                                Rectangle mol = new Rectangle(i.x, i.y, 50,50);
+                                if(mol.intersects(ham)){
+                                    i.Killmole();
+                                    score+=10;
+                                }
+                            }
                             repaint();
                         }
                     };
@@ -84,9 +120,9 @@ public class Main extends JFrame implements KeyListener {
         g.setColor(Color.RED);
         g.setFont(new Font("Serif",Font.PLAIN,40));
         g.drawString("시간 : "+count,470,70);
-        if(count%3!=0){
-            g.drawImage(digda,(int)(Math.random()*900)+50,(int)(Math.random()*450)+100,null);
-            g.drawImage(digtrio,500,500,null);
+        g.drawString("점수 : "+score,800,70);
+        for(Mole i:mole){
+            i.Printmole(g);
         }
         g.setColor(Color.blue);
         g.drawOval(x,y,30,30);
