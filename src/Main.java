@@ -5,6 +5,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.sound.sampled.*;
 import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 import java.util.Timer;
@@ -75,7 +79,7 @@ public class Main extends JFrame implements KeyListener {
     int x=100, y=100;
     boolean hardmode=false;
     int gamemode=0;//0 시작전,1게임중,2게임끝
-    int count=60;
+    int count=6;
     static int score=0;
     public final int Width =1024;
     public final int Height =666;
@@ -96,8 +100,11 @@ public class Main extends JFrame implements KeyListener {
     public void setGame(){
         switch(gamemode){
             case 0:
-                mole.add(new Mole(300, 300, false,100,1));
-                mole.add(new Mole(700, 300, true,100,2));
+                count=6;
+                score=0;
+                mole.clear();
+                mole.add(new Mole(300, 300, false,0,1));
+                mole.add(new Mole(700, 300, true,0,2));
                 break;
             case 1:
                 System.out.println("gamestart");
@@ -108,8 +115,10 @@ public class Main extends JFrame implements KeyListener {
                         count--;
                         if(count==0){
                             gamemode=2;
+                            timer.cancel();
+                            setGame();
                         }
-                        if (count % 2 == 0) {
+                        if (count % 2 == 0&&count>2) {
                             System.out.println("spawn");
                             for(int i=0;i<Math.random()*4;i++)
                                 mole.add(new Mole((int) (Math.random() * 800) + 50, (int) (Math.random() * 450) + 100, hardmode,count));
@@ -124,6 +133,25 @@ public class Main extends JFrame implements KeyListener {
                 timer.schedule(task, 1000, 1000);
                 break;
             case 2:
+                count=0;
+                System.out.println("mole : "+mole.size());
+                mole.add(new Mole(500, 450, false,0,-1));
+                repaint();
+                try{
+                    File rank=new File("./rank.txt");
+                    FileReader read = new FileReader(rank);
+                    BufferedReader buf = new BufferedReader(read);
+                    String line;
+                    int ly=100;
+                    while((line=buf.readLine())!=null){
+                        System.out.println("등수"+line);
+                        //g.drawString(line, 20, ly);
+                        ly+=10;
+                    }
+                }
+                catch(IOException e){
+                    System.out.println(e);
+                }
                 break;
         }
     }
@@ -178,6 +206,12 @@ public class Main extends JFrame implements KeyListener {
                                         repaint();
                                         break;
                                     }
+                                    else if(i.special==-1){
+                                        gamemode=0;
+                                        setGame();
+                                        repaint();
+                                        break;
+                                    }
                                     else {
                                         score += i.trio?30:10;
                                     }
@@ -225,6 +259,14 @@ public class Main extends JFrame implements KeyListener {
                 g.drawString("끝났습니다!", 400, 200);
                 g.setFont(new Font("Serif", Font.PLAIN, 50));
                 g.drawString("점수 : " + score, 400, 400);
+                g.setColor(Color.GRAY);
+                g.fillRect(495,500,90,30);
+                g.setColor(Color.WHITE);
+                g.setFont(new Font("Serif", Font.PLAIN, 20));
+                g.drawString("다시하기", 500, 520);
+                for (Mole i : mole) {
+                    i.Printmole(g);
+                }
                 break;
         }
         g.setColor(Color.blue);
