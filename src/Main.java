@@ -21,7 +21,7 @@ class Mole{
     Image molek;
     int special =0;
     int birth;
-    boolean trio=Math.random()*5>3?true:false;
+    boolean trio=Math.random()*7>5?true:false;
     boolean hard;
     int x,y;
     boolean life=true;
@@ -79,7 +79,7 @@ public class Main extends JFrame implements KeyListener {
     int x=100, y=100;
     boolean hardmode=false;
     int gamemode=0;//0 시작전,1게임중,2게임끝
-    int count=6;
+    int count;
     static int score=0;
     public final int Width =1024;
     public final int Height =666;
@@ -100,7 +100,7 @@ public class Main extends JFrame implements KeyListener {
     public void setGame(){
         switch(gamemode){
             case 0:
-                count=6;
+                count=60;
                 score=0;
                 mole.clear();
                 mole.add(new Mole(300, 300, false,0,1));
@@ -137,21 +137,6 @@ public class Main extends JFrame implements KeyListener {
                 System.out.println("mole : "+mole.size());
                 mole.add(new Mole(500, 450, false,0,-1));
                 repaint();
-                try{
-                    File rank=new File("./rank.txt");
-                    FileReader read = new FileReader(rank);
-                    BufferedReader buf = new BufferedReader(read);
-                    String line;
-                    int ly=100;
-                    while((line=buf.readLine())!=null){
-                        System.out.println("등수"+line);
-                        //g.drawString(line, 20, ly);
-                        ly+=10;
-                    }
-                }
-                catch(IOException e){
-                    System.out.println(e);
-                }
                 break;
         }
     }
