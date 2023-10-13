@@ -3,7 +3,9 @@ import org.w3c.dom.css.Rect;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import javax.sound.sampled.*;
 import javax.swing.*;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Stack;
 import java.util.Timer;
@@ -24,6 +26,15 @@ class Mole{
     }
     public void Killmole(){
         life=false;
+        try{
+            Clip clip = AudioSystem.getClip();
+            AudioInputStream inputStream = AudioSystem.getAudioInputStream(
+                    Main.class.getResourceAsStream("./sound/dead.wav"));
+            clip.open(inputStream);
+            clip.start();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
     public void Catchmole(int mx, int my){
         Rectangle ham = new Rectangle(mx, my, 135, 135);
@@ -42,7 +53,7 @@ public class Main extends JFrame implements KeyListener {
     public final int Height =666;
     Image hammer = new ImageIcon(Main.class.getResource("./image/hammer.png")).getImage();
     Image dig =new ImageIcon(Main.class.getResource("./image/digda.png")).getImage();
-    Image background;//= new ImageIcon(Main.class.getResource(".image/grass.jpg")).getImage();
+    Image bg;//= new ImageIcon(Main.class.getResource(".image/grass.png")).getImage();
 
     public Main(){
         Timer timer=new Timer();
@@ -89,6 +100,15 @@ public class Main extends JFrame implements KeyListener {
                 case KeyEvent.VK_SPACE:
                     hammer = new ImageIcon(Main.class.getResource("./image/hamdown.png")).getImage();
                     System.out.println("space");
+                    try{
+                        Clip clip = AudioSystem.getClip();
+                        AudioInputStream inputStream = AudioSystem.getAudioInputStream(
+                                Main.class.getResourceAsStream("./sound/pop.wav"));
+                        clip.open(inputStream);
+                        clip.start();
+                    } catch (Exception ei) {
+                        throw new RuntimeException(ei);
+                    }
                     Timer t = new Timer();
                     TimerTask tas=new TimerTask() {
                         @Override
@@ -114,7 +134,7 @@ public class Main extends JFrame implements KeyListener {
     }
     public void paint (Graphics g){
         g.clearRect(0,0,Width,Height);
-        g.drawImage(background, 0,0,null);
+        g.drawImage(bg, 0,0,null);
         //g.drawRect(50,100,950,500);
         System.out.println(count);
         g.setColor(Color.RED);
