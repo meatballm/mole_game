@@ -107,6 +107,15 @@ public class Main extends JFrame implements KeyListener {
                 mole.add(new Mole(700, 300, true,0,2));
                 break;
             case 1:
+                try{
+                    Clip clip = AudioSystem.getClip();
+                    AudioInputStream inputStream = AudioSystem.getAudioInputStream(
+                            Main.class.getResourceAsStream("./sound/Suburbia.wav"));
+                    clip.open(inputStream);
+                    clip.start();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
                 System.out.println("gamestart");
                 Timer timer = new Timer();
                 TimerTask task = new TimerTask() {
@@ -186,6 +195,8 @@ public class Main extends JFrame implements KeyListener {
                                         gamemode = 1;
                                         if(i.special==2)
                                             hardmode=true;
+                                        else
+                                            hardmode=false;
                                         mole.clear();
                                         setGame();
                                         repaint();
